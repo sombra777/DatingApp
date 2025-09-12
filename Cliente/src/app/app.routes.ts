@@ -5,6 +5,8 @@ import { MembeDetaild } from '../features/members/membe-detaild/membe-detaild';
 import { List } from '../features/list/list';
 import { Messages } from '../features/messages/messages';
 import { authGuard } from '../core/guards/auth-guard';
+import { NotFound } from '../shared/not-found/not-found';
+import { ServerError } from '../shared/error/server-error/server-error';
 
 export const routes: Routes = [
   { path: '', component: Home },
@@ -20,5 +22,6 @@ export const routes: Routes = [
     ],
   },
 
-  { path: '**', component: Home },
+  { path: 'server-error', component: ServerError },
+  { path: '**', component: NotFound },
 ];
