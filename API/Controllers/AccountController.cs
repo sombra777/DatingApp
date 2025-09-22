@@ -26,23 +26,23 @@ public class AccountController(AppDbContext context, ITokenService tokenService)
         context.Users.Add(user);
         await context.SaveChangesAsync();
 
-          return new UsuarioDto
-       {
-           Id = user.Id,
-           Email = user.Email,
-           DisplayName = user.DisplayName,
-           Token = tokenService.CreateToken(user)
+        return new UsuarioDto
+        {
+            Id = user.Id,
+            Email = user.Email,
+            DisplayName = user.DisplayName,
+            Token = tokenService.CreateToken(user)
         };
     }
 
     [HttpPost("login")]
     public async Task<ActionResult<UsuarioDto>> Login(LoginDto loginDto)
     {
-        var user =  await context.Users.SingleOrDefaultAsync(x => x.Email == loginDto.email);
+        var user = await context.Users.SingleOrDefaultAsync(x => x.Email == loginDto.email);
 
         if (user == null) return Unauthorized("Invalid email");
 
-        using var hmac = new HMACSHA512(user.PasswordSalt);
+        using var hmac = new HMACSHA256(user.PasswordSalt);
 
         var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(loginDto.password));
 
@@ -51,12 +51,12 @@ public class AccountController(AppDbContext context, ITokenService tokenService)
             if (computedHash[i] != user.PasswordHash[i]) return Unauthorized("Invalid password");
         }
 
-       return new UsuarioDto
-       {
-           Id = user.Id,
-           Email = user.Email,
-           DisplayName = user.DisplayName,
-           Token = tokenService.CreateToken(user)
+        return new UsuarioDto
+        {
+            Id = user.Id,
+            Email = user.Email,
+            DisplayName = user.DisplayName,
+            Token = tokenService.CreateToken(user)
         };
     }
 }
